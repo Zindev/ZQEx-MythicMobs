@@ -1,6 +1,7 @@
 package me.Zindev.zqexmmb.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,25 +9,25 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
+import io.lumine.xikage.mythicmobs.api.exceptions.InvalidMobTypeException;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Zindev.zquest.Gerekli;
 import me.Zindev.zquest.chestlib.ChestField;
 import me.Zindev.zquest.objects.QuestAction;
 import me.Zindev.zquest.objects.SerLocation;
 import me.Zindev.zquest.objects.extension.QuestActionMark;
-import net.elseland.xikage.MythicMobs.MythicMobs;
-import net.elseland.xikage.MythicMobs.API.MythicMobsAPI;
-import net.elseland.xikage.MythicMobs.API.Exceptions.InvalidMobTypeException;
-import net.elseland.xikage.MythicMobs.Mobs.MythicMob;
 
 @QuestActionMark(actionID ="MythicMobsSpawn")
-public class McAddExpAction extends QuestAction{
+public class MMSpawnAction extends QuestAction{
 	private static final long serialVersionUID = 1L;
 	
 	
 	private Integer amount;
 	private String mobName;
 	private SerLocation spawnLoc;
-	public McAddExpAction() {
+	public MMSpawnAction() {
 		mobName = "SkeletonKing";
 		amount = 1;
 		spawnLoc = new SerLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
@@ -54,15 +55,17 @@ public class McAddExpAction extends QuestAction{
 				",spawnLoc:"+spawnLoc+
 				")";
 	}
-
+	private static BukkitAPIHelper helper = MythicMobs.inst().getAPIHelper();
 	@Override
 	public void execute(Player p) {;
 		Location a = spawnLoc.getLocation();
-		if(MythicMobs.plugin.mmList.containsKey(mobName)){
-			MythicMobsAPI api = MythicMobs.plugin.getAPI();
+		
+		
+		if(helper.getMythicMob(mobName) != null){
+			
 			try {
-				MythicMob m = api.getMobAPI().getMythicMob(mobName);
-				for(int i = 0;i<amount;i++)api.getMobAPI().spawnMythicMob(m, a);
+				if(helper.getMythicMob(mobName) == null)return;
+				for(int i = 0;i<amount;i++)helper.spawnMythicMob(mobName, a);
 			} catch (InvalidMobTypeException e) { }
 			
 		}
@@ -91,7 +94,7 @@ public class McAddExpAction extends QuestAction{
 										, (short)0)
 								
 								, null, null, "mobName", "&cMob Name", 0, 0,new ArrayList<String>(
-										new ArrayList<String>(MythicMobs.plugin.mmList.keySet()))),
+										MythicMobs.inst().getMobManager().getMobTypes().stream().map(MythicMob::getInternalName).collect(Collectors.toList()))),
 				new ChestField( 
 						Gerekli.yapEsya(new ItemStack(Material.IRON_INGOT), "&3&lLocation", 
 								new ArrayList<String>(Arrays.asList(

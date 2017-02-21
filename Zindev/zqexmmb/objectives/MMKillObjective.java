@@ -2,16 +2,18 @@ package me.Zindev.zqexmmb.objectives;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.Zindev.zquest.Gerekli;
 import me.Zindev.zquest.chestlib.ChestField;
 import me.Zindev.zquest.objects.QuestObjective;
 import me.Zindev.zquest.objects.extension.QuestObjectiveMark;
-import net.elseland.xikage.MythicMobs.MythicMobs;
 
 @QuestObjectiveMark(objectiveID="MythicMobsKillObjective")
 public class MMKillObjective extends QuestObjective{
@@ -101,7 +103,7 @@ public class MMKillObjective extends QuestObjective{
 								, (short)0)
 						
 						, null, null, "mobName", "&cMob Name", 0, 0,new ArrayList<String>(
-								new ArrayList<String>(MythicMobs.plugin.mmList.keySet())))
+								MythicMobs.inst().getMobManager().getMobTypes().stream().map(MythicMob::getInternalName).collect(Collectors.toList())))
 						
 					)));
 	}
